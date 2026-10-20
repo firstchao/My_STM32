@@ -278,12 +278,12 @@ void TB6612_GetSpeed(void)
         /* 3. 累加总计数（用于计算位置/圈数） */
         total_encoder_count += delta;
 
-        // /* 4. 计算方向（判定与标志语义保持原样：计数递减=正转） */
-        // if (delta > 0) {
-        //     motor_direction_rpm = 0;  // 反转
-        // } else if (delta < 0) {
-        //     motor_direction_rpm = 1;  // 正转
-        // }
+        /* 4. 计算方向（判定与标志语义保持原样：计数递减=正转） */
+        if (delta > 0) {
+            motor_direction_rpm = 0;  // 反转
+        } else if (delta < 0) {
+            motor_direction_rpm = 1;  // 正转
+        }
 
         /* 5. 把增量累加到测速窗口，窗口满了再统一换算转速 */
         speed_window_count += delta;

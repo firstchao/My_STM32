@@ -2,11 +2,11 @@
 #include "led/bsp_led.h"
 #include "dwt/bsp_dwt.h"
 #include "usart/bsp_usart.h"
-#include "USB/app_usb.h"
-
+#include "oled/bsp_i2c_oled.h"
 
 #include "MOTOR/app_motor.h"
-
+#include "oled/app_oled.h"
+#include "USB/app_usb.h"
 
 void SystemClock_Config(void);
 
@@ -18,18 +18,23 @@ int main(void)
 
 	SystemClock_Config();   // 配置系统时钟，设置为 72MHz
 	
-	Debug_UART_Init();			// 初始化调试串口，用于打印调试信息
-	
 	DWT_Init();							// 启动 DWT 计数器，用于精确测量程序运行时间
 
-  
+  Debug_UART_Init();      //初始化调试串口
+
+  //OLED_Init();            //初始化OLED
 
   APP_TASK();
+
 
 	while (1)
 	{
       USB_Data_Print(); //串口打印电机运行参数
       
+      //OLED_DataShow();  //OLED显示电机运行参数
+      
+      /*延时控制（确保采样周期大于2秒）*/
+      DWT_DelayS(2);  // 延时 2 秒
 	}
 }
 

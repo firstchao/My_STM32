@@ -1,7 +1,9 @@
 #include "USB/app_usb.h"
+#include "usart/bsp_usart.h"
 #include "TB6612/bsp_tb6612.h"
+#include "NVIC/bsp_nvic.h"
 
-extern volatile Motor_State_t motor_state;//电机状态标志
+extern volatile Motor_State_t motor_state;// 电机状态标志
 
 extern volatile int8_t motor_direction_theo;// 电机理论旋转方向标志位
 extern volatile int8_t motor_direction_rpm;// 电机实际旋转方向标志位
@@ -9,7 +11,8 @@ extern volatile int8_t motor_direction_rpm;// 电机实际旋转方向标志位
 extern volatile float speed_percent;// 速度百分比值
 extern volatile float motor_speed_rpm; // 电机实际转速
 
-extern volatile uint32_t pwm_duty;//TB6612 PWM占空比
+extern volatile uint32_t pwm_duty;// TB6612 PWM占空比
+
 
 /**
   * @brief  打印电机运行参数
@@ -34,17 +37,23 @@ void USB_Data_Print(void)
             printf("当前电机转向：正\r\n");
         else
             printf("当前电机转向：反\r\n");
+        if(motor_direction_rpm == motor_direction_theo)//校准电机反向
+            printf("方向校准：正常\r\n");
+        else
+            printf("方向校准：异常\r\n");
 
         //打印电机速度
         printf("电位器设置速度百分比：%.2f%\r\n",speed_percent);
 
-        printf("电机测速：%.2f r/min\r\n",motor_speed_rpm);
+        printf("电机转速：%.2f r/min\r\n",motor_speed_rpm);
 
         printf("PWM占空比：%d\r\n",pwm_duty);
         
     }
-		printf("\n");
-    HAL_Delay(3000);//每隔3s显示一次
+	printf("\n\n");
+    //HAL_Delay(3000);//每隔3s更新一次
 }
+
+
 
 /****end****/

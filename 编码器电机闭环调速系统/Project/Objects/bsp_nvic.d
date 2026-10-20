@@ -57,9 +57,9 @@
 .\objects\bsp_nvic.o: ..\Libraries\STM32F1xx_HAL_Driver\Inc\stm32f1xx_hal_hcd.h
 .\objects\bsp_nvic.o: ..\Libraries\STM32F1xx_HAL_Driver\Inc\stm32f1xx_hal_mmc.h
 .\objects\bsp_nvic.o: D:\MDK\ARM\ARMCC\Bin\..\include\stdio.h
+.\objects\bsp_nvic.o: D:\MDK\ARM\ARMCC\Bin\..\include\stdbool.h
 .\objects\bsp_nvic.o: D:\MDK\ARM\ARMCC\Bin\..\include\string.h
 .\objects\bsp_nvic.o: D:\MDK\ARM\ARMCC\Bin\..\include\math.h
 .\objects\bsp_nvic.o: ..\User\stm32f1xx_it.h
 .\objects\bsp_nvic.o: ..\User\key/bsp_key.h
-.\objects\bsp_nvic.o: ..\User\TB6612/bsp_tb6612.h
-.\objects\bsp_nvic.o: ..\User\TIM/bsp_tim.h
+.\objects\bsp_nvic.o: ..\User\usart/bsp_usart.h

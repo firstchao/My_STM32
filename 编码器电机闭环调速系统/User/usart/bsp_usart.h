@@ -5,8 +5,11 @@
 
 extern UART_HandleTypeDef huart1;   // 外部声明调试串口 UART1 句柄
 
+
+
 /************ 函数声明 ************/
 void Debug_UART_Init(void);
+void USART1_MotorControl(void);
 
 
 #endif /* __BSP_USART_H__ */

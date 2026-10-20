@@ -79,6 +79,7 @@ void Encoder_Init(void)
 
 }
 
+/*TIM3 PWM模式 HAL函数*/
 void HAL_TIM_PWM_MspInit(TIM_HandleTypeDef* tim_pwmHandle)
 {
     if(tim_pwmHandle->Instance==TIM3)
@@ -114,6 +115,7 @@ void HAL_TIM_PWM_MspDeInit(TIM_HandleTypeDef* tim_pwmHandle)
     }
 }
 
+/*TIM1 编码器模式 HAL函数*/
 void HAL_TIM_Encoder_MspInit(TIM_HandleTypeDef* tim_encoderHandle)
 {
 

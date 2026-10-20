@@ -56,10 +56,13 @@
 .\objects\main.o: ..\Libraries\STM32F1xx_HAL_Driver\Inc\stm32f1xx_hal_hcd.h
 .\objects\main.o: ..\Libraries\STM32F1xx_HAL_Driver\Inc\stm32f1xx_hal_mmc.h
 .\objects\main.o: D:\MDK\ARM\ARMCC\Bin\..\include\stdio.h
+.\objects\main.o: D:\MDK\ARM\ARMCC\Bin\..\include\stdbool.h
 .\objects\main.o: D:\MDK\ARM\ARMCC\Bin\..\include\string.h
 .\objects\main.o: D:\MDK\ARM\ARMCC\Bin\..\include\math.h
 .\objects\main.o: ..\User\led/bsp_led.h
 .\objects\main.o: ..\User\dwt/bsp_dwt.h
 .\objects\main.o: ..\User\usart/bsp_usart.h
-.\objects\main.o: ..\APP\USB/app_usb.h
+.\objects\main.o: ..\User\oled/bsp_i2c_oled.h
 .\objects\main.o: ..\APP\MOTOR/app_motor.h
+.\objects\main.o: ..\APP\oled/app_oled.h
+.\objects\main.o: ..\APP\USB/app_usb.h

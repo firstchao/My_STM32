@@ -5,6 +5,7 @@
 /* Includes ------------------------------------------------------------------*/
 #include "stm32f1xx_hal.h"
 #include <stdio.h>	//使用 printf
+#include <stdbool.h>//使用布尔类型
 #include <string.h>
 #include <math.h>
 

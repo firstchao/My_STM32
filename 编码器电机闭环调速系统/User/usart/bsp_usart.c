@@ -1,6 +1,20 @@
 #include "usart/bsp_usart.h"
+#include "NVIC/bsp_nvic.h"
+#include "TB6612/bsp_tb6612.h"
 
-UART_HandleTypeDef huart1;  // USART1 句柄
+UART_HandleTypeDef huart1;  // USART1 结构体句柄
+
+
+
+/*key1,key2中断发生标志位*/
+extern volatile uint8_t key1_flag;
+extern volatile uint8_t key2_flag;
+
+extern volatile Motor_State_t motor_state;//电机状态标志位
+extern volatile int8_t motor_direction_theo; // 电机旋转方向标志位(1: 正转, 0: 反转)
+
+extern volatile USART_Cmd_t usart_cmd;//串口命令标识
+extern uint8_t RxBuff[RX_BUF_LEN];   //接收数据缓冲区
 
 /**
   * @brief  调试串口 UART 初始化函数
@@ -25,6 +39,9 @@ void Debug_UART_Init(void)
     {
         Error_Handler(); // 初始化失败，进入错误处理函数
     }
+
+    //开启首次中断接收
+    HAL_UART_Receive_IT(&huart1, RxBuff, 1);
 }
 
 
@@ -46,16 +63,20 @@ void HAL_UART_MspInit(UART_HandleTypeDef* uartHandle)
         __HAL_RCC_GPIOA_CLK_ENABLE();
 
         // 3. 配置 USART1_TX（PA9）为复用推挽输出，高速
-        GPIO_InitStruct.Pin   = GPIO_PIN_9;
-        GPIO_InitStruct.Mode  = GPIO_MODE_AF_PP;              // 复用推挽输出
-        GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_HIGH;         // 高速
+        GPIO_InitStruct.Pin = GPIO_PIN_9;
+        GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
+        GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_HIGH;
         HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 
         // 4. 配置 USART1_RX（PA10）为浮空输入
-        GPIO_InitStruct.Pin  = GPIO_PIN_10;
-        GPIO_InitStruct.Mode = GPIO_MODE_INPUT;               // 输入模式
-        GPIO_InitStruct.Pull = GPIO_NOPULL;                   // 无上拉/下拉
+        GPIO_InitStruct.Pin = GPIO_PIN_10;
+        GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
+        GPIO_InitStruct.Pull = GPIO_NOPULL;
         HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
+
+        //5. USART1 中断初始化
+        HAL_NVIC_SetPriority(USART1_IRQn, 3, 0);// USART1 中断优先级：3
+        HAL_NVIC_EnableIRQ(USART1_IRQn);  // 使能 USART1 中断
     }
 }
 
@@ -75,6 +96,9 @@ void HAL_UART_MspDeInit(UART_HandleTypeDef* uartHandle)
         /*-------------------- 释放 GPIO 引脚 --------------------*/
         // PA9（USART1_TX）、PA10（USART1_RX）解除初始化
         HAL_GPIO_DeInit(GPIOA, GPIO_PIN_9 | GPIO_PIN_10);
+
+        //USART1 中断取消初始化
+        HAL_NVIC_DisableIRQ(USART1_IRQn);
     }
 }
 
@@ -86,7 +110,111 @@ void HAL_UART_MspDeInit(UART_HandleTypeDef* uartHandle)
   */
 int fputc(int ch, FILE *f)
 {
-         HAL_UART_Transmit(&huart1, (uint8_t *)&ch, 1, HAL_MAX_DELAY);
-         return ch;
+    HAL_UART_Transmit(&huart1, (uint8_t *)&ch, 1, 100);
+    return ch;
+}
+
+/**
+  * @brief  检测串口发送命令控制电机状态
+  * @note   命令表：STOP(关闭电机);WORK(开启电机);TOGGLE(电机换向);REVERSE(电机反转);POSITIVE(电机正转)
+  */
+void USART1_MotorControl(void)
+{
+    if(usart_cmd != CMD_BLANK)//usart1接收到命令
+    {
+        /****解析串口接收到的命令****/
+        /*命令：STOP(执行条件：电机运行)*/
+        if(usart_cmd == CMD_STOP)
+        {
+            if(motor_state == MOTOR_RUNNING)
+            {
+                key1_flag = 1;//置位电机开关标志位
+                printf("已关闭电机\r\n");
+            }
+            else
+            {
+                printf("电机已为关闭状态，命令无效\r\n");
+            }
+        }
+
+        /*命令：WORK(执行条件：电机停止)*/
+        else if(usart_cmd == CMD_WORK) 
+        {
+            if(motor_state == MOTOR_IDLE)
+            {
+                key1_flag = 1;//置位电机开关标志位
+                printf("已开启电机\r\n");
+            }
+            else
+            {
+                printf("电机已为运行状态，命令无效\r\n");
+            }
+        }
+
+        /*命令：TOGGLE(执行条件：电机运行)*/
+        else if(usart_cmd == CMD_TOGGLE)
+        {
+            if(motor_state == MOTOR_RUNNING)//确保电机运行
+            {
+                key2_flag = 1;//置位电机换向标志位
+                printf("已翻转电机转向\r\n");
+            }
+             else
+            {
+                printf("电机未运行，命令无效\r\n");
+            }
+        }
+
+        /*命令：REVERSE(执行条件：电机正转)*/
+        else if(usart_cmd == CMD_REVERSE)
+        {
+            if(motor_state == MOTOR_RUNNING)//确保电机运行
+            {
+                if(motor_direction_theo)//电机正转
+                {
+                    key2_flag = 1;//置位电机换向标志位
+                    printf("已设置电机旋转方向为：正转\r\n");
+                }
+                else//电机反转
+                {
+                    printf("当前电机旋转方向为：反转，命令无效\r\n");
+                }
+            }
+             else
+            {
+                printf("电机未运行，命令无效\r\n");
+            }
+            
+        }
+
+        /*命令：POSITIVE(执行条件：电机反转)*/
+        else if(usart_cmd == CMD_POSITIVE)
+        {
+            if(motor_state == MOTOR_RUNNING)//确保电机运行
+            {
+                if(!motor_direction_theo)//电机反转
+                {
+                    key2_flag = 1;//置位电机换向标志位
+                    printf("已设置电机旋转方向为：反转\r\n");
+                }
+                else//电机正转
+                {
+                    printf("当前电机旋转方向为：正转，命令无效\r\n");
+                }
+            }
+             else
+            {
+                printf("电机未运行，命令无效\r\n");
+            }
+        }
+
+        else if(usart_cmd == CMD_DEFAULT)
+        {
+            printf("未知命令\r\n");
+        }
+        printf("\n\n");
+    }
+    /*置位为空命令,等待下一次调用*/
+    usart_cmd = CMD_BLANK;
 }
 

@@ -56,9 +56,11 @@
 .\objects\stm32f1xx_it.o: ..\Libraries\STM32F1xx_HAL_Driver\Inc\stm32f1xx_hal_hcd.h
 .\objects\stm32f1xx_it.o: ..\Libraries\STM32F1xx_HAL_Driver\Inc\stm32f1xx_hal_mmc.h
 .\objects\stm32f1xx_it.o: D:\MDK\ARM\ARMCC\Bin\..\include\stdio.h
+.\objects\stm32f1xx_it.o: D:\MDK\ARM\ARMCC\Bin\..\include\stdbool.h
 .\objects\stm32f1xx_it.o: D:\MDK\ARM\ARMCC\Bin\..\include\string.h
 .\objects\stm32f1xx_it.o: D:\MDK\ARM\ARMCC\Bin\..\include\math.h
 .\objects\stm32f1xx_it.o: ..\User\stm32f1xx_it.h
 .\objects\stm32f1xx_it.o: ..\User\key/bsp_key.h
 .\objects\stm32f1xx_it.o: ..\User\NVIC/bsp_nvic.h
 .\objects\stm32f1xx_it.o: ..\User\TB6612/bsp_tb6612.h
+.\objects\stm32f1xx_it.o: ..\User\usart/bsp_usart.h

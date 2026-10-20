@@ -24,7 +24,7 @@
 #include "key/bsp_key.h"
 #include "NVIC/bsp_nvic.h"
 #include "TB6612/bsp_tb6612.h"
-
+#include "usart/bsp_usart.h"
 
    
 /** @addtogroup STM32F1xx_HAL_Examples
@@ -143,6 +143,8 @@ void PendSV_Handler(void)
 void SysTick_Handler(void)
 {
   /* USER CODE BEGIN SysTick_IRQn 0 */
+  USART1_MotorControl();//检测串口接收命令
+
   TB6612_SetState();//设置电机状态
   TB6612_SetSpeed();//设置电机速度
   /* USER CODE END SysTick_IRQn 0 */
@@ -167,6 +169,20 @@ void EXTI0_IRQHandler(void)
 void EXTI15_10_IRQHandler(void)
 {
   HAL_GPIO_EXTI_IRQHandler(KEY2_reverse_Pin);//处理 EXTI13
+}
+
+/**
+  * @brief 此函数处理 USART1 的全局中断
+  */
+void USART1_IRQHandler(void)
+{
+  /* USER CODE BEGIN USART1_IRQn 0 */
+
+  /* USER CODE END USART1_IRQn 0 */
+  HAL_UART_IRQHandler(&huart1);
+  /* USER CODE BEGIN USART1_IRQn 1 */
+
+  /* USER CODE END USART1_IRQn 1 */
 }
 
 

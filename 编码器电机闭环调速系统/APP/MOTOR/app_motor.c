@@ -20,7 +20,7 @@ void APP_TASK(void)
 	
 		motor_state = MOTOR_IDLE;//设置电机状态为停止
 
-    HAL_TIM_Encoder_Start(&htim4, TIM_CHANNEL_ALL);//启动编码器
+    HAL_TIM_Encoder_Start(&htim4, TIM_CHANNEL_ALL);//启动TIM1编码器
 
     RA1_ADC_Start();//初始化 ADC，并开启ADC转换
 

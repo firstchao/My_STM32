@@ -17,12 +17,12 @@ extern TIM_HandleTypeDef htim3;
 extern TIM_HandleTypeDef htim4;
 
 /****函数声明****/
-//TIM3
+//TIM3 PWM
 void TB6612_PWMA_Init(void);
 void HAL_TIM_PWM_MspInit(TIM_HandleTypeDef* tim_pwmHandle);
 void HAL_TIM_MspPostInit(TIM_HandleTypeDef* timHandle);
 void HAL_TIM_PWM_MspDeInit(TIM_HandleTypeDef* tim_pwmHandle);
-//TIM4
+//TIM1 Encoder
 void Encoder_Init(void);
 void HAL_TIM_Encoder_MspInit(TIM_HandleTypeDef* tim_encoderHandle);
 void HAL_TIM_Encoder_MspDeInit(TIM_HandleTypeDef* tim_encoderHandle);
