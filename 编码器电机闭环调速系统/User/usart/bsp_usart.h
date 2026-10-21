@@ -3,8 +3,8 @@
 
 #include "main.h"
 
-extern UART_HandleTypeDef huart1;   // 外部声明调试串口 UART1 句柄
-
+extern UART_HandleTypeDef huart1;
+extern DMA_HandleTypeDef hdma_usart1_rx;
 
 
 /************ 函数声明 ************/

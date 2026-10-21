@@ -3,7 +3,7 @@
 #include "TB6612/bsp_tb6612.h"
 
 UART_HandleTypeDef huart1;  // USART1 结构体句柄
-
+DMA_HandleTypeDef hdma_usart1_rx; //DMA RX 结构体句柄
 
 
 /*key1,key2中断发生标志位*/
@@ -40,8 +40,10 @@ void Debug_UART_Init(void)
         Error_Handler(); // 初始化失败，进入错误处理函数
     }
 
-    //开启首次中断接收
-    HAL_UART_Receive_IT(&huart1, RxBuff, 1);
+    //开启 DMA + 空闲中断接收
+    HAL_UARTEx_ReceiveToIdle_DMA(&huart1, RxBuff, RX_BUF_LEN); 
+    // 关闭 DMA 半满中断
+    __HAL_DMA_DISABLE_IT(&hdma_usart1_rx, DMA_IT_HT); 
 }
 
 
@@ -62,21 +64,45 @@ void HAL_UART_MspInit(UART_HandleTypeDef* uartHandle)
         // 2. 使能 GPIOA 时钟（PA9、PA10）
         __HAL_RCC_GPIOA_CLK_ENABLE();
 
-        // 3. 配置 USART1_TX（PA9）为复用推挽输出，高速
+        // 4.开启 DMA1 时钟
+        __HAL_RCC_DMA1_CLK_ENABLE();
+
+        // 5. 配置 USART1_TX（PA9）为复用推挽输出，高速
         GPIO_InitStruct.Pin = GPIO_PIN_9;
         GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
         GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_HIGH;
         HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 
-        // 4. 配置 USART1_RX（PA10）为浮空输入
+        // 6. 配置 USART1_RX（PA10）为浮空输入
         GPIO_InitStruct.Pin = GPIO_PIN_10;
         GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
         GPIO_InitStruct.Pull = GPIO_NOPULL;
         HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 
-        //5. USART1 中断初始化
-        HAL_NVIC_SetPriority(USART1_IRQn, 3, 0);// USART1 中断优先级：3
-        HAL_NVIC_EnableIRQ(USART1_IRQn);  // 使能 USART1 中断
+        // 7. 配置 DMA 句柄
+        hdma_usart1_rx.Instance = DMA1_Channel5;
+        hdma_usart1_rx.Init.Direction = DMA_PERIPH_TO_MEMORY;
+        hdma_usart1_rx.Init.PeriphInc = DMA_PINC_DISABLE;
+        hdma_usart1_rx.Init.MemInc = DMA_MINC_ENABLE;
+        hdma_usart1_rx.Init.PeriphDataAlignment = DMA_PDATAALIGN_BYTE;
+        hdma_usart1_rx.Init.MemDataAlignment = DMA_MDATAALIGN_BYTE;
+        hdma_usart1_rx.Init.Mode = DMA_NORMAL; // 普通模式，触发一次搬运一次
+        hdma_usart1_rx.Init.Priority = DMA_PRIORITY_MEDIUM;
+        if (HAL_DMA_Init(&hdma_usart1_rx) != HAL_OK)
+        {
+            Error_Handler();
+        }
+
+        // 8.将 DMA 句柄与 UART 句柄链接
+        __HAL_LINKDMA(uartHandle, hdmarx, hdma_usart1_rx);
+
+        // 9. USART1 中断初始化
+        HAL_NVIC_SetPriority(USART1_IRQn, 3, 0);
+        HAL_NVIC_EnableIRQ(USART1_IRQn);
+
+        // 10.USART1 DMA1 中断初始化
+        HAL_NVIC_SetPriority(DMA1_Channel5_IRQn, 4, 0);// USART1 中断优先级：4
+        HAL_NVIC_EnableIRQ(DMA1_Channel5_IRQn);  // 使能 USART1 中断
     }
 }
 
@@ -96,6 +122,9 @@ void HAL_UART_MspDeInit(UART_HandleTypeDef* uartHandle)
         /*-------------------- 释放 GPIO 引脚 --------------------*/
         // PA9（USART1_TX）、PA10（USART1_RX）解除初始化
         HAL_GPIO_DeInit(GPIOA, GPIO_PIN_9 | GPIO_PIN_10);
+
+        // USART1 DMA 中断取消初始化
+        HAL_DMA_DeInit(uartHandle->hdmarx);
 
         //USART1 中断取消初始化
         HAL_NVIC_DisableIRQ(USART1_IRQn);

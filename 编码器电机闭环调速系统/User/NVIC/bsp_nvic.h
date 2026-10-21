@@ -15,9 +15,10 @@ typedef enum
     CMD_DEFAULT//未定义命令
 }USART_Cmd_t;
 
-#define RX_BUF_LEN    10   //接收数据缓冲区 
+#define RX_BUF_LEN    32   //接收数据缓冲区 
 
 void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin);
+void HAL_UARTEx_RxEventCallback(UART_HandleTypeDef *huart, uint16_t Size);
 
 
 #endif

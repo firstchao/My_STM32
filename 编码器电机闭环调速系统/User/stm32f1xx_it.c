@@ -172,6 +172,14 @@ void EXTI15_10_IRQHandler(void)
 }
 
 /**
+  * @brief 此函数处理 DMA1 通道5 的全局中断
+  */
+void DMA1_Channel5_IRQHandler(void)
+{
+  HAL_DMA_IRQHandler(&hdma_usart1_rx);
+}
+
+/**
   * @brief 此函数处理 USART1 的全局中断
   */
 void USART1_IRQHandler(void)
