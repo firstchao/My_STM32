@@ -57,5 +57,6 @@
 .\objects\bsp_fonts.o: ..\Libraries\STM32F1xx_HAL_Driver\Inc\stm32f1xx_hal_hcd.h
 .\objects\bsp_fonts.o: ..\Libraries\STM32F1xx_HAL_Driver\Inc\stm32f1xx_hal_mmc.h
 .\objects\bsp_fonts.o: D:\MDK\ARM\ARMCC\Bin\..\include\stdio.h
+.\objects\bsp_fonts.o: D:\MDK\ARM\ARMCC\Bin\..\include\stdbool.h
 .\objects\bsp_fonts.o: D:\MDK\ARM\ARMCC\Bin\..\include\string.h
 .\objects\bsp_fonts.o: D:\MDK\ARM\ARMCC\Bin\..\include\math.h

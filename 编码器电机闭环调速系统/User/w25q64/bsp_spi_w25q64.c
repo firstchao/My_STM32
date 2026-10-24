@@ -1,7 +1,7 @@
 #include "w25q64/bsp_spi_w25q64.h"
 
+extern SPI_HandleTypeDef hspi2;
 
-extern SPI_HandleTypeDef hspi1;
 
 /**
   * @brief  初始化FLASH片选引脚GPIO
@@ -48,7 +48,7 @@ uint16_t W25Q64JV_ReadDeviceID(void)
     tx_buf[5] = 0x00;  // 哑元字节2
 
     FLASH_CS_LOW();//拉低片选，开始通讯
-    if(HAL_SPI_TransmitReceive(&hspi1, tx_buf, rx_buf, 6, HAL_MAX_DELAY) != HAL_OK)//发送命令并接收数据
+    if(HAL_SPI_TransmitReceive(&hspi2, tx_buf, rx_buf, 6, HAL_MAX_DELAY) != HAL_OK)//发送命令并接收数据
     {
         FLASH_CS_HIGH();//拉高片选，结束通讯
         printf("错误：发送接收制造商/设备ID失败！\r\n");
@@ -76,7 +76,7 @@ uint32_t W25Q64JV_ReadJEDECID(void)
     tx_buf[3] = 0x00;// 哑元字节3
 
     FLASH_CS_LOW();//拉低片选，开始通讯
-    if(HAL_SPI_TransmitReceive(&hspi1, tx_buf, rx_buf, 4, HAL_MAX_DELAY) != HAL_OK)//发送命令并接收数据
+    if(HAL_SPI_TransmitReceive(&hspi2, tx_buf, rx_buf, 4, HAL_MAX_DELAY) != HAL_OK)//发送命令并接收数据
     {
         FLASH_CS_HIGH();//拉高片选，结束通讯
         printf("错误：发送接收芯片JEDEC ID失败！\r\n");
@@ -97,7 +97,7 @@ uint32_t W25Q64JV_ReadJEDECID(void)
     uint8_t cmd = W25Q64_WRITE_ENABLE;// 写使能命令
 
     FLASH_CS_LOW();//拉低片选，开始通讯
-    if(HAL_SPI_Transmit(&hspi1, &cmd, 1, HAL_MAX_DELAY) != HAL_OK)
+    if(HAL_SPI_Transmit(&hspi2, &cmd, 1, HAL_MAX_DELAY) != HAL_OK)
     {
         printf("错误：发送写使能命令失败！\r\n");
     }
@@ -114,19 +114,20 @@ uint8_t W25Q64JV_WaitForWriteEnd(void)
 
     FLASH_CS_LOW();                                // 拉低片选，开始通信
 
-    if (HAL_SPI_Transmit(&hspi1, &cmd, 1, HAL_MAX_DELAY) != HAL_OK)  // 发送读取状态寄存器命令
+    if (HAL_SPI_Transmit(&hspi2, &cmd, 1, HAL_MAX_DELAY) != HAL_OK)  // 发送读取状态寄存器命令
     {
         printf("错误：发送读取状态寄存器命令失败！\r\n");
         return 1;
     }
 
+    uint32_t timeout = 0;//程序计时，防止超时
     do {
-        if (HAL_SPI_Receive(&hspi1, &status, 1, HAL_MAX_DELAY) != HAL_OK)  // 接收状态寄存器值
+        if (HAL_SPI_Receive(&hspi2, &status, 1, HAL_MAX_DELAY) != HAL_OK)  // 接收状态寄存器值
         {
             printf("错误：接收状态寄存器失败！\r\n");
             return 1;
         }
-    } while ((status & 0x01) == SET);                    // 等待写操作完成（WIP位清零）
+    } while ((status & 0x01) == SET && timeout < 100000);                  // 等待写操作完成（WIP位清零）
 
     FLASH_CS_HIGH();                               // 拉高片选，结束通信
     return 0;
@@ -142,7 +143,7 @@ uint8_t W25Q64JV_WaitForWriteEnd(void)
     W25Q64JV_WriteEnable();// 写使能
 
     FLASH_CS_LOW();//拉低片选，开始通讯
-    if(HAL_SPI_Transmit(&hspi1, &cmd, 1, HAL_MAX_DELAY) != HAL_OK)// 发送擦除命令
+    if(HAL_SPI_Transmit(&hspi2, &cmd, 1, HAL_MAX_DELAY) != HAL_OK)// 发送擦除命令
     {
         printf("错误：SPI 发送芯片擦除命令失败\r\n");
     }
@@ -171,7 +172,7 @@ void W25Q64JV_SectorErase(uint32_t sector_addr)
     W25Q64JV_WriteEnable();// 写使能
 
     FLASH_CS_LOW();//拉低片选，开始通讯
-    if(HAL_SPI_Transmit(&hspi1, tx_buf, 4, HAL_MAX_DELAY) != HAL_OK)// 发送命令和地址
+    if(HAL_SPI_Transmit(&hspi2, tx_buf, 4, HAL_MAX_DELAY) != HAL_OK)// 发送命令和地址
     {
         printf("错误：SPI 发送扇区擦除命令失败\r\n");
     }
@@ -206,11 +207,11 @@ void W25Q64JV_WritePage(uint32_t write_addr, uint8_t* buffer, uint16_t size)
     W25Q64JV_WriteEnable();// 写使能
 
     FLASH_CS_LOW();//拉低片选，开始通讯
-    if(HAL_SPI_Transmit(&hspi1, tx_buf, 4, HAL_MAX_DELAY) != HAL_OK)// 发送写命令和地址
+    if(HAL_SPI_Transmit(&hspi2, tx_buf, 4, HAL_MAX_DELAY) != HAL_OK)// 发送写命令和地址
     {
         printf("错误：SPI 发送页写入命令失败\r\n");
     }
-    if(HAL_SPI_Transmit(&hspi1, buffer, size, HAL_MAX_DELAY) != HAL_OK)// 发送写入数据
+    if(HAL_SPI_Transmit(&hspi2, buffer, size, HAL_MAX_DELAY) != HAL_OK)// 发送写入数据
     {
         printf("错误：SPI 发送写入数据失败\r\n");
     }
@@ -272,14 +273,14 @@ void W25Q64JV_ReadBuffer(uint32_t read_addr, uint8_t* buffer, uint32_t size)
     tx_buf[0] = W25Q64_READ_DATA;         // 读取数据指令
     tx_buf[1] = (read_addr >> 16) & 0xFF; // 地址高8位
     tx_buf[2] = (read_addr >>  8) & 0xFF; // 地址中8位
-    tx_buf[2] =  read_addr & 0xFF;        // 地址低8位
+    tx_buf[3] =  read_addr & 0xFF;        // 地址低8位
 
       FLASH_CS_LOW();//拉低片选，开始通讯
-    if(HAL_SPI_Transmit(&hspi1, tx_buf, 4, HAL_MAX_DELAY) != HAL_OK)// 发送写命令和地址
+    if(HAL_SPI_Transmit(&hspi2, tx_buf, 4, HAL_MAX_DELAY) != HAL_OK)// 发送写命令和地址
     {
         printf("错误：SPI 发送读取命令失败\r\n");
     }
-    if(HAL_SPI_Receive(&hspi1, buffer, size, HAL_MAX_DELAY) != HAL_OK)// 发送写入数据
+    if(HAL_SPI_Receive(&hspi2, buffer, size, HAL_MAX_DELAY) != HAL_OK)// 发送写入数据
     {
         printf("错误：SPI 发送读取命令失败\r\n");
     }
@@ -294,7 +295,7 @@ void W25Q64JV_WakeUp(void)
     uint8_t cmd = W25Q64_RELEASE_POWER_DOWN_HPM_DEVICE_ID;  // 唤醒命令
     FLASH_CS_LOW();                                         // 拉低片选，开始通信
 
-    if (HAL_SPI_Transmit(&hspi1, &cmd, 1, HAL_MAX_DELAY) != HAL_OK)  // 发送命令
+    if (HAL_SPI_Transmit(&hspi2, &cmd, 1, HAL_MAX_DELAY) != HAL_OK)  // 发送命令
     {
         printf("SPI 发送唤醒命令失败\r\n");
     }
@@ -310,13 +311,15 @@ void W25Q64JV_PowerDown(void)
     uint8_t cmd = W25Q64_POWER_DOWN;  // 掉电命令
     FLASH_CS_LOW();                   // 拉低片选，开始通信
 
-    if (HAL_SPI_Transmit(&hspi1, &cmd, 1, HAL_MAX_DELAY) != HAL_OK)  // 发送命令
+    if (HAL_SPI_Transmit(&hspi2, &cmd, 1, HAL_MAX_DELAY) != HAL_OK)  // 发送命令
     {
         printf("SPI 发送掉电命令失败\r\n");
     }
 
     FLASH_CS_HIGH();                  // 拉高片选，结束通信
 }
+
+
 
 
 /*******END*******/

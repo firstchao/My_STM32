@@ -22,7 +22,9 @@ int main(void)
 
   Debug_UART_Init();      //初始化调试串口
 
-  //OLED_Init();            //初始化OLED
+  OLED_Init();            //初始化OLED
+
+  W25Q_Init();            //初始化W25Q64JV
 
   APP_TASK();
 
@@ -31,7 +33,7 @@ int main(void)
 	{
       USB_Data_Print(); //串口打印电机运行参数
       
-      //OLED_DataShow();  //OLED显示电机运行参数
+      OLED_DataShow();  //OLED显示电机运行参数
       
       /*延时控制（确保采样周期大于2秒）*/
       DWT_DelayS(2);  // 延时 2 秒

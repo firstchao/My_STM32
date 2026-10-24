@@ -36,14 +36,20 @@ void HAL_I2C_MspInit(I2C_HandleTypeDef* i2cHandle)
   // 判断是否为I2C1外设
   if(i2cHandle->Instance==I2C1)
   {
-    /* 开启GPIOB端口时钟 */
+    /* 1. 开启GPIOB端口时钟 */
     __HAL_RCC_GPIOB_CLK_ENABLE();
+
+    /* 2. 开启 AFIO 时钟 (重映射) */
+    __HAL_RCC_AFIO_CLK_ENABLE();
+     
+    /* 3. 使能 I2C1 引脚重映射到 PB8/PB9 */
+    __HAL_AFIO_REMAP_I2C1_ENABLE();
 
     /** 配置I2C1的SCL和SDA引脚
       PB6 -> I2C1_SCL
       PB7 -> I2C1_SDA
     */
-    GPIO_InitStruct.Pin = GPIO_PIN_6|GPIO_PIN_7;         // 选择PB6和PB7
+    GPIO_InitStruct.Pin = I2C1_SDA_Pin|I2C1_SCL_Pin;         // 选择PB8和PB9
     GPIO_InitStruct.Mode = GPIO_MODE_AF_OD;              // 复用开漏模式（I2C必选）
     GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_HIGH;        // 设置引脚高速模式
     HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);              // 初始化GPIOB对应引脚
@@ -66,8 +72,11 @@ void HAL_I2C_MspDeInit(I2C_HandleTypeDef* i2cHandle)
     __HAL_RCC_I2C1_CLK_DISABLE();
 
     /** 反初始化I2C1对应的GPIO引脚 */
-    HAL_GPIO_DeInit(GPIOB, GPIO_PIN_6);   // 释放PB6引脚
-    HAL_GPIO_DeInit(GPIOB, GPIO_PIN_7);   // 释放PB7引脚
+    HAL_GPIO_DeInit(I2C1_SDA_GPIO_Port, I2C1_SDA_Pin);   // 释放PB9引脚
+    HAL_GPIO_DeInit(I2C1_SCL_GPIO_Port, I2C1_SCL_Pin);   // 释放PB9引脚
+
+    /* 反初始化时，可以恢复默认映射状态 */
+     __HAL_AFIO_REMAP_I2C1_DISABLE();
   }
 }
 

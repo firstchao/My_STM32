@@ -549,6 +549,16 @@
               <FileType>1</FileType>
               <FilePath>..\User\i2c\bsp_i2c.c</FilePath>
             </File>
+            <File>
+              <FileName>bsp_i2c_oled.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\User\oled\bsp_i2c_oled.c</FilePath>
+            </File>
+            <File>
+              <FileName>bsp_fonts.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\User\fonts\bsp_fonts.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -560,9 +570,19 @@
               <FilePath>..\APP\MOTOR\app_motor.c</FilePath>
             </File>
             <File>
+              <FileName>app_oled.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\APP\OLED\app_oled.c</FilePath>
+            </File>
+            <File>
               <FileName>app_usb.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\APP\USB\app_usb.c</FilePath>
+            </File>
+            <File>
+              <FileName>app_w25q.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\APP\W25Q\app_w25q.c</FilePath>
             </File>
           </Files>
         </Group>

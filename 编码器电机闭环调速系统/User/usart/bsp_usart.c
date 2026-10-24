@@ -10,11 +10,13 @@ DMA_HandleTypeDef hdma_usart1_rx; //DMA RX 结构体句柄
 extern volatile uint8_t key1_flag;
 extern volatile uint8_t key2_flag;
 
-extern volatile Motor_State_t motor_state;//电机状态标志位
-extern volatile int8_t motor_direction_theo; // 电机旋转方向标志位(1: 正转, 0: 反转)
+extern volatile Motor_State_t motor_state;      //电机状态标志位
+extern volatile int8_t motor_direction_theo;    // 电机旋转方向标志位(1: 正转, 0: 反转)
 
-extern volatile USART_Cmd_t usart_cmd;//串口命令标识
-extern uint8_t RxBuff[RX_BUF_LEN];   //接收数据缓冲区
+extern volatile USART_Cmd_t usart_cmd;  //串口命令标识
+extern uint8_t RxBuff[RX_BUF_LEN];      //接收数据缓冲区
+
+uint8_t speed_percent_set = 0;//串口设置电机速度百分比
 
 /**
   * @brief  调试串口 UART 初始化函数
@@ -87,7 +89,7 @@ void HAL_UART_MspInit(UART_HandleTypeDef* uartHandle)
         hdma_usart1_rx.Init.PeriphDataAlignment = DMA_PDATAALIGN_BYTE;
         hdma_usart1_rx.Init.MemDataAlignment = DMA_MDATAALIGN_BYTE;
         hdma_usart1_rx.Init.Mode = DMA_NORMAL; // 普通模式，触发一次搬运一次
-        hdma_usart1_rx.Init.Priority = DMA_PRIORITY_MEDIUM;
+        hdma_usart1_rx.Init.Priority = DMA_PRIORITY_LOW;
         if (HAL_DMA_Init(&hdma_usart1_rx) != HAL_OK)
         {
             Error_Handler();

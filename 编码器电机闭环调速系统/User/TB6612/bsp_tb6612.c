@@ -23,16 +23,16 @@ static volatile uint8_t brake_timer = 0;   // 制动计时器
 static volatile uint8_t pending_direction = 0; // 记录制动后需要切换的方向
 volatile int8_t motor_direction_theo = 0;      // 电机理论旋转方向标志位(1: 正转, 0: 反转)
 
-
-uint32_t adc_val = 0;	// 存储ADC原始数字值
+volatile int8_t adc_ban = 0;    //电位器禁用标识(0：启用, 1：禁用)
+uint32_t adc_val = 0;	        // 存储ADC原始数字值
 volatile float speed_percent = 0;// 存储转换后的速度百分比值
 //volatile float target_speed = 0;// 存储电位器设置的目标速度
 
 static volatile int16_t curr_encoder_count = 0;
 static volatile int16_t last_encoder_count = 0;
-int32_t total_encoder_count = 0;         // 累计计数，用于计算位置
-volatile int8_t motor_direction_rpm = 0;       // 电机实际旋转方向标志位(1: 正转, 0: 反转)
-volatile float motor_speed_rpm = 0.0f;          // 存储电机实际转速
+int32_t total_encoder_count = 0;            // 累计计数，用于计算位置
+volatile int8_t motor_direction_rpm = 0;    // 电机实际旋转方向标志位(1: 正转, 0: 反转)
+volatile float motor_speed_rpm = 0.0f;      // 存储电机实际转速
 
 /* 测速窗口累加器：
  * 测速值每 SPEED_SAMPLE_MS 毫秒刷新一次，其余时间保持上一次结果，
@@ -236,7 +236,12 @@ void TB6612_SetSpeed(void)
 		adc_val = HAL_ADC_GetValue(&hadc1);
 
 		/*映射为速度百分比（仅用于串口显示）*/
-		speed_percent = (float)adc_val / 4095.0f * 100.0f;
+        if(adc_ban)//电位器禁用，启用串口设置速度模式
+        {
+            /**/
+        }
+        else//未禁用电位器，直接映射
+		    speed_percent = (float)adc_val / 4095.0f * 100.0f;
 
 		TB6612_GetSpeed();//获取电机实际速度
 

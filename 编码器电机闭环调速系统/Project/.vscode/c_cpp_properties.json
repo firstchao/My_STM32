@@ -141,6 +141,7 @@
                 "d:\\stm32_project\\project\\MY_PROJECT_STM32\\编码器电机闭环调速系统\\APP\\MOTOR",
                 "d:\\stm32_project\\project\\MY_PROJECT_STM32\\编码器电机闭环调速系统\\APP\\OLED",
                 "d:\\stm32_project\\project\\MY_PROJECT_STM32\\编码器电机闭环调速系统\\APP\\USB",
+                "d:\\stm32_project\\project\\MY_PROJECT_STM32\\编码器电机闭环调速系统\\APP\\W25Q",
                 "d:\\stm32_project\\project\\MY_PROJECT_STM32\\编码器电机闭环调速系统\\Doc"
             ],
             "defines": [

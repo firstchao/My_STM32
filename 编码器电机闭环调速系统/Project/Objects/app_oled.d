@@ -57,6 +57,7 @@
 .\objects\app_oled.o: ..\Libraries\STM32F1xx_HAL_Driver\Inc\stm32f1xx_hal_hcd.h
 .\objects\app_oled.o: ..\Libraries\STM32F1xx_HAL_Driver\Inc\stm32f1xx_hal_mmc.h
 .\objects\app_oled.o: D:\MDK\ARM\ARMCC\Bin\..\include\stdio.h
+.\objects\app_oled.o: D:\MDK\ARM\ARMCC\Bin\..\include\stdbool.h
 .\objects\app_oled.o: D:\MDK\ARM\ARMCC\Bin\..\include\string.h
 .\objects\app_oled.o: D:\MDK\ARM\ARMCC\Bin\..\include\math.h
 .\objects\app_oled.o: ..\User\dwt/bsp_dwt.h

@@ -17,6 +17,7 @@
 #define WFLASH_ID   0xEF4017    // W25Q64芯片ID
 
 #define W25Q64_SPI_FLASH_PAGESIZE       256             // W25Q64页大小，单位字
+#define W25Q64_SPI_FLASH_SectorSIZE     256 * 16        // W25Q64扇区大小
 
 
 /********************************W25Q64命令定义*******************************/

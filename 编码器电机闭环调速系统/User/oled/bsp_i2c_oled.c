@@ -132,6 +132,7 @@ void OLED_FillFull(void)
 void OLED_Init(void)
 {
     MX_I2C1_Init();//初始化I2C1
+    
     HAL_Delay(100);  // 延时保证电源稳定
 
     while (OLED_CheckDevice(OLED_SLAVER_ADDR) != SUCCESS);
