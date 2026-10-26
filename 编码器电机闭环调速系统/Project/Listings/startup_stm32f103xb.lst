@@ -461,10 +461,10 @@ ARM Macro Assembler    Page 8
 
 Command Line: --debug --xref --diag_suppress=9931 --cpu=Cortex-M3 --apcs=interw
 ork --depend=.\objects\startup_stm32f103xb.d -o.\objects\startup_stm32f103xb.o 
--ID:\MDK\packs\Keil\STM32F1xx_DFP\2.4.1\Device\Include --predefine="__EVAL SETA
- 1" --predefine="__MICROLIB SETA 1" --predefine="__UVISION_VERSION SETA 543" --
-predefine="STM32F10X_MD SETA 1" --list=.\listings\startup_stm32f103xb.lst ..\Li
-braries\CMSIS\Device\ST\STM32F1xx\Source\Templates\arm\startup_stm32f103xb.s
+-ID:\MDK\packs\Keil\STM32F1xx_DFP\2.4.1\Device\Include --predefine="__MICROLIB 
+SETA 1" --predefine="__UVISION_VERSION SETA 543" --predefine="STM32F10X_MD SETA
+ 1" --list=.\listings\startup_stm32f103xb.lst ..\Libraries\CMSIS\Device\ST\STM3
+2F1xx\Source\Templates\arm\startup_stm32f103xb.s
 
 
 
@@ -1378,4 +1378,4 @@ es\arm\startup_stm32f103xb.s
 es\arm\startup_stm32f103xb.s
 Comment: __main used once
 2 symbols
-406 symbols in table
+405 symbols in table

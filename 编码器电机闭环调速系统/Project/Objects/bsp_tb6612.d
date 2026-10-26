@@ -65,3 +65,5 @@
 .\objects\bsp_tb6612.o: ..\User\NVIC/bsp_nvic.h
 .\objects\bsp_tb6612.o: ..\User\PID/bsp_pid.h
 .\objects\bsp_tb6612.o: ..\User\led/bsp_led.h
+.\objects\bsp_tb6612.o: ..\User\w25q64/bsp_spi_w25q64.h
+.\objects\bsp_tb6612.o: ..\User\spi/bsp_spi.h

@@ -1,6 +1,7 @@
 #include "usart/bsp_usart.h"
 #include "NVIC/bsp_nvic.h"
 #include "TB6612/bsp_tb6612.h"
+#include "w25q64/bsp_spi_w25q64.h"
 
 UART_HandleTypeDef huart1;  // USART1 结构体句柄
 DMA_HandleTypeDef hdma_usart1_rx; //DMA RX 结构体句柄
@@ -16,7 +17,13 @@ extern volatile int8_t motor_direction_theo;    // 电机旋转方向标志位(1
 extern volatile USART_Cmd_t usart_cmd;  //串口命令标识
 extern uint8_t RxBuff[RX_BUF_LEN];      //接收数据缓冲区
 
-uint8_t speed_percent_set = 0;//串口设置电机速度百分比
+extern volatile uint32_t usb_rx_speedpercent;  //串口命令获取速度百分比(解析命令获取)
+
+extern volatile int8_t adc_ban;         //电位器禁用标识(0：启用, 1：禁用)
+extern volatile int8_t adc_switch_flah; //电位器状态切换标志位(1:启用; 0:空闲; -1:禁用)
+
+extern volatile uint32_t usb_rx_speedpercent;  //串口命令获取速度百分比(解析命令获取)
+extern volatile uint8_t Usb_SpeedUpdata_flag;  //串口设置速度模式：速度更新标志位(1:更新; 0:默认)
 
 /**
   * @brief  调试串口 UART 初始化函数
@@ -239,6 +246,57 @@ void USART1_MotorControl(void)
             }
         }
 
+        /*命令：ADC_BAN(执行条件：电位器已启用)*/
+        else if(usart_cmd == CMD_ADC_BAN)
+        {
+            if(adc_ban == 0)//确保电位器启用
+            {
+                adc_ban = 1;//置1,禁用电位器
+                adc_switch_flah = -1;//置-1,从存储器读取参数
+                printf("已禁用电位器\r\n");
+            }
+            else
+            {
+                printf("电位器已被禁用，命令无效\r\n");
+            }
+        }
+
+        /*命令：ADC_ALLOW(执行条件：电位器已禁用)*/
+        else if(usart_cmd == CMD_ADC_ALLOW)
+        {
+            if(adc_ban == 1)//确保电位器禁用
+            {
+                adc_ban = 0;//置0,启用电位器
+                adc_switch_flah = 1;
+                printf("已启用电位器\r\n");
+            }
+            else
+            {
+                printf("电位器已被启用，命令无效\r\n");
+            }
+        }
+        /*MOTOR_SPEED:XXX(有效)(执行条件：电位器已禁用)*/
+        else if(usart_cmd == CMD_SPEEDSET)
+        {
+            if(adc_ban == 1)//确保电位器禁用
+            {
+                Usb_SpeedUpdata_flag = 1;//置1，更新数据
+                printf("检测到数据更新——已设置为:%d%\r\n", usb_rx_speedpercent);//打印更新速度
+            }
+            else
+            {
+                Usb_SpeedUpdata_flag = 0;//置0，防止后续干扰
+                usb_rx_speedpercent = 0;//清0缓冲区，防止占用内存
+                printf("电位器未禁用，命令无效\r\n");
+                printf("请发送ADC_BAN禁用电位器\r\n");
+            }
+        }
+
+        else if(usart_cmd == CMD_SPEEDSET_err)
+        {
+            usb_rx_speedpercent = 0;//清0缓冲区，清除无效数据
+            printf("命令MOTOR_SPEED:XXX解析失败\r\n");
+        }
         else if(usart_cmd == CMD_DEFAULT)
         {
             printf("未知命令\r\n");

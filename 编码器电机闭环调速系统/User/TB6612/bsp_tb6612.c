@@ -4,6 +4,7 @@
 #include "NVIC/bsp_nvic.h"
 #include "PID/bsp_pid.h"
 #include "led/bsp_led.h"
+#include "w25q64/bsp_spi_w25q64.h"
 
 /*key1,key2中断发生标志位*/
 extern volatile uint8_t key1_flag;
@@ -43,7 +44,7 @@ static volatile float    speed_rpm_signed   = 0.0f;// 带符号的滤波后转�
 
 volatile uint32_t pwm_duty = PWM_DUTY_LOW;//TB6612 PWM占空比
 
-
+extern volatile uint8_t speedupdata_print_flag;//打印更新速度标志位(1:更新; 0:空闲)
 
 /**
   * @brief  初始化TB6612
@@ -233,20 +234,24 @@ void TB6612_SetSpeed(void)
 	if(motor_state == MOTOR_RUNNING)
     {
 		/*读取ADC值*/
-		adc_val = HAL_ADC_GetValue(&hadc1);
+		if(adc_ban)//电位器禁用，启用串口设置速度模式
+		{
+			pwm_duty = W25Q_USB_GetValue();//解析命令并直接映射为PWM占空比
+			speedupdata_print_flag = 1;//置1打印更新数据
+		}
+       
+    else//未禁用电位器，调用PID算法计算
+    {
+			adc_val = HAL_ADC_GetValue(&hadc1);//获取电位器ADC值
+			speed_percent = (float)adc_val / 4095.0f * 100.0f;//映射为速度百分比（仅用于串口显示）
+			
+			//获取电机实际速度
+			TB6612_GetSpeed();
 
-		/*映射为速度百分比（仅用于串口显示）*/
-        if(adc_ban)//电位器禁用，启用串口设置速度模式
-        {
-            /**/
-        }
-        else//未禁用电位器，直接映射
-		    speed_percent = (float)adc_val / 4095.0f * 100.0f;
-
-		TB6612_GetSpeed();//获取电机实际速度
-
-		//PID 计算PWM占空比
-		pwm_duty = PID_Calculate(adc_val, motor_speed_rpm);
+			//PID 计算PWM占空比
+			pwm_duty = PID_Calculate(adc_val, motor_speed_rpm);
+    }
+		
 
 		// 将计算出的占空比写入寄存器
 		__HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_3, pwm_duty);

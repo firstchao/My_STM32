@@ -12,6 +12,10 @@ typedef enum
     CMD_TOGGLE,//换向
     CMD_POSITIVE,//正转
     CMD_REVERSE,//反转
+    CMD_ADC_BAN,//禁用电位器
+    CMD_ADC_ALLOW,//启用电位器
+    CMD_SPEEDSET,//设置速度
+    CMD_SPEEDSET_err,//设置速度(命令格式错误)
     CMD_DEFAULT//未定义命令
 }USART_Cmd_t;
 

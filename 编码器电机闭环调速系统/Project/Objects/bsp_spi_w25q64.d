@@ -61,3 +61,4 @@
 .\objects\bsp_spi_w25q64.o: D:\MDK\ARM\ARMCC\Bin\..\include\string.h
 .\objects\bsp_spi_w25q64.o: D:\MDK\ARM\ARMCC\Bin\..\include\math.h
 .\objects\bsp_spi_w25q64.o: ..\User\spi/bsp_spi.h
+.\objects\bsp_spi_w25q64.o: ..\User\TB6612/bsp_tb6612.h

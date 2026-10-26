@@ -62,3 +62,5 @@
 .\objects\bsp_usart.o: D:\MDK\ARM\ARMCC\Bin\..\include\math.h
 .\objects\bsp_usart.o: ..\User\NVIC/bsp_nvic.h
 .\objects\bsp_usart.o: ..\User\TB6612/bsp_tb6612.h
+.\objects\bsp_usart.o: ..\User\w25q64/bsp_spi_w25q64.h
+.\objects\bsp_usart.o: ..\User\spi/bsp_spi.h

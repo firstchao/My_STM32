@@ -3,10 +3,12 @@
 #include "dwt/bsp_dwt.h"
 #include "usart/bsp_usart.h"
 #include "oled/bsp_i2c_oled.h"
+#include "w25q64/bsp_spi_w25q64.h"
 
 #include "MOTOR/app_motor.h"
 #include "oled/app_oled.h"
 #include "USB/app_usb.h"
+#include "W25Q/app_w25q.h"
 
 void SystemClock_Config(void);
 
@@ -31,6 +33,10 @@ int main(void)
 
 	while (1)
 	{
+      W25Q_Inaugural_GetandSave();//检测电位器状态变化
+
+      W25Q_WriteorRead_Speed();//检测标志位，存储或读取数据
+
       USB_Data_Print(); //串口打印电机运行参数
       
       OLED_DataShow();  //OLED显示电机运行参数

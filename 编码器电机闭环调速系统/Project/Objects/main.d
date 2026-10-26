@@ -63,6 +63,9 @@
 .\objects\main.o: ..\User\dwt/bsp_dwt.h
 .\objects\main.o: ..\User\usart/bsp_usart.h
 .\objects\main.o: ..\User\oled/bsp_i2c_oled.h
+.\objects\main.o: ..\User\w25q64/bsp_spi_w25q64.h
+.\objects\main.o: ..\User\spi/bsp_spi.h
 .\objects\main.o: ..\APP\MOTOR/app_motor.h
 .\objects\main.o: ..\APP\oled/app_oled.h
 .\objects\main.o: ..\APP\USB/app_usb.h
+.\objects\main.o: ..\APP\W25Q/app_w25q.h

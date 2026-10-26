@@ -153,17 +153,17 @@
         <Ww>
           <count>0</count>
           <WinNumber>1</WinNumber>
-          <ItemText>motor_speed_rpm</ItemText>
+          <ItemText>usart_cmd,0x0A</ItemText>
         </Ww>
         <Ww>
           <count>1</count>
           <WinNumber>1</WinNumber>
-          <ItemText>pwm_duty,0x0A</ItemText>
+          <ItemText>adc_ban,0x0A</ItemText>
         </Ww>
         <Ww>
           <count>2</count>
           <WinNumber>1</WinNumber>
-          <ItemText>adc_val,0x0A</ItemText>
+          <ItemText>adc_switch_flah,0x0A</ItemText>
         </Ww>
         <Ww>
           <count>3</count>

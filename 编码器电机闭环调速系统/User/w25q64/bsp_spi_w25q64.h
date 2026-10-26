@@ -5,7 +5,7 @@
 #include "spi/bsp_spi.h"
 
 /*SPI引脚定义*/
-#define FLASH_CS_Pin        GPIO_PIN_4
+#define FLASH_CS_Pin        GPIO_PIN_8
 #define FLASH_CS_GPIO_Port  GPIOA
 
 /*******************************宏定义*******************************/
@@ -18,6 +18,18 @@
 
 #define W25Q64_SPI_FLASH_PAGESIZE       256             // W25Q64页大小，单位字
 #define W25Q64_SPI_FLASH_SectorSIZE     256 * 16        // W25Q64扇区大小
+
+/*USB控制速度模式参数结构体*/
+typedef struct
+{
+    uint32_t magic_number;//数据有效性校验位
+    uint32_t rx_speepercent;//速度百分比
+    uint32_t rx_adcval;//转换得到的adc值
+    //int8_t motor_direction;//电机转向
+}USB_RX_MotorSpeed;
+
+#define RXSPEED_SECTOR_ADDR     0x000000    // 扇区起始地址（4KB扇区）
+#define CONFIG_MAGIC            0xAA55BBCC  // 有效数据标志
 
 
 /********************************W25Q64命令定义*******************************/
@@ -48,5 +60,9 @@ void W25Q64JV_WriteBuffer(uint32_t write_addr, uint8_t* buffer, uint32_t size); 
 void W25Q64JV_ReadBuffer(uint32_t read_addr, uint8_t* buffer, uint32_t size);   //从指定地址读取数据到缓冲区
 void W25Q64JV_PowerDown(void);                      // 进入掉电模式，降低功耗
 void W25Q64JV_WakeUp(void);                         // 唤醒FLASH
+
+uint8_t W25Q_WriteorRead_Speed(void);
+void W25Q_Inaugural_GetandSave(void);
+uint32_t W25Q_USB_GetValue(void);
 
 #endif /*__ GPIO_H__ */
