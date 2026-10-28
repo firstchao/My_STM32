@@ -211,11 +211,11 @@ void USART1_MotorControl(void)
                 if(motor_direction_theo)//电机正转
                 {
                     key2_flag = 1;//置位电机换向标志位
-                    printf("已设置电机旋转方向为：正转\r\n");
+                    printf("已设置电机旋转方向为：反转\r\n");
                 }
                 else//电机反转
                 {
-                    printf("当前电机旋转方向为：反转，命令无效\r\n");
+                    printf("当前电机旋转方向为：正转，命令无效\r\n");
                 }
             }
              else
@@ -233,11 +233,11 @@ void USART1_MotorControl(void)
                 if(!motor_direction_theo)//电机反转
                 {
                     key2_flag = 1;//置位电机换向标志位
-                    printf("已设置电机旋转方向为：反转\r\n");
+                    printf("已设置电机旋转方向为：正转\r\n");
                 }
                 else//电机正转
                 {
-                    printf("当前电机旋转方向为：正转，命令无效\r\n");
+                    printf("当前电机旋转方向为：反转，命令无效\r\n");
                 }
             }
              else
